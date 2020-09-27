@@ -12,22 +12,36 @@ template<
     typename Tindexes
         >
 struct Vector{
+    bool isDeleted = false;
     DataType* data;
     using indexes = Tindexes;
     using data_type = DataType;
 
     template<typename... Elements>
-    Vector(Elements... els)
+    Vector(Elements... els) :
+        data(new DataType[]{els...})
     {
-        data = new DataType[]{els...};
     }
+
+    Vector(Vector<DataType, Tindexes>& other) = delete;
 
     ~Vector()
     {
-        if(data!=nullptr)
+        delete[] data;
+        isDeleted = true;
+    }
+
+    template<
+        auto index,
+        auto relativeIndex = relative_index_v<index, indexes>
+            >
+    auto get() const
+    {
+        if constexpr(relativeIndex != -1)
         {
-            delete data;
+            return data[relativeIndex];
         }
+        return DataType{0};
     }
 };
 
@@ -41,32 +55,34 @@ template<
     typename LeftIndexes = typename TLeft::indexes,
     typename RightIndexes = typename TRight::indexes,
     typename = typename std::enable_if_t<std::is_same_v<data_type_left,data_type_right>>,
-    typename = typename std::enable_if_t<has_same_index_type_v<TLeft, TRight>>
+    typename = typename std::enable_if_t<has_same_index_type_v<LeftIndexes, RightIndexes>>
     >
 struct Sumoperation
 {
     using indexes = join_t<LeftIndexes,RightIndexes>;
     using data_type = data_type_left;
 
-    TLeft left;
-    TRight right;
+    TLeftRef left;
+    TRightRef right;
 
     Sumoperation(TLeftRef&& left, TRightRef&& right): 
         left(std::forward<TLeftRef>(left)),
-        right(std::forward<TRightRef>(right))
-    {}
+        right(std::forward<TRightRef>(right)){}
 
-    template<typename TIndex>
-    auto operator[] (const TIndex index)
+    ~Sumoperation(){}
+
+    template<auto index>
+    auto get() const
     {
         data_type_left buffer = 0;
         if constexpr (contains_v<LeftIndexes, index>)
         {
-            buffer += left[index];
+            data_type test = left.template get<index>();
+            buffer += test;
         }
         if constexpr (contains_v<RightIndexes, index>)
         {
-            buffer += right[index];
+            buffer += right.template get<index>();
         }
 
         return buffer;
@@ -83,11 +99,13 @@ template<
     typename LeftIndexes = typename TLeft::indexes,
     typename RightIndexes = typename TRight::indexes,
     typename = typename std::enable_if_t<std::is_same_v<data_type_left,data_type_right>>,
-    typename = typename std::enable_if_t<has_same_index_type_v<TLeft, TRight>>
+    typename = typename std::enable_if_t<has_same_index_type_v<LeftIndexes, RightIndexes>>
     >
-auto operator+(TLeftRef left, TRightRef right)
+auto operator+(
+        TLeftRef&& left,
+        TRightRef&& right)
 {
-    return Sumoperation(
+    return Sumoperation<TLeftRef, TRightRef>(
         std::forward<TLeftRef>(left),
         std::forward<TRightRef>(right));
 }
