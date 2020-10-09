@@ -48,6 +48,7 @@ struct Vector{
 template<
     typename TLeftRef,
     typename TRightRef,
+    typename OperationPolicy,
     typename TLeft = std::remove_reference_t<TLeftRef>,
     typename TRight = std::remove_reference_t<TRightRef>,
     typename data_type_left = typename TLeft::data_type,
@@ -57,7 +58,7 @@ template<
     typename = typename std::enable_if_t<std::is_same_v<data_type_left,data_type_right>>,
     typename = typename std::enable_if_t<has_same_index_type_v<LeftIndexes, RightIndexes>>
     >
-struct Sumoperation
+struct BinOperation
 {
     using indexes = join_t<LeftIndexes,RightIndexes>;
     using data_type = data_type_left;
@@ -65,29 +66,40 @@ struct Sumoperation
     TLeftRef left;
     TRightRef right;
 
-    Sumoperation(TLeftRef&& left, TRightRef&& right): 
+    BinOperation(TLeftRef&& left, TRightRef&& right): 
         left(std::forward<TLeftRef>(left)),
         right(std::forward<TRightRef>(right)){}
 
-    ~Sumoperation(){}
+    ~BinOperation(){}
 
     template<auto index>
     auto get() const
     {
-        data_type_left buffer = 0;
-        if constexpr (contains_v<LeftIndexes, index>)
-        {
-            data_type test = left.template get<index>();
-            buffer += test;
-        }
-        if constexpr (contains_v<RightIndexes, index>)
-        {
-            buffer += right.template get<index>();
-        }
-
-        return buffer;
+        return OperationPolicy::Eval(
+                left.template get<index>(),
+                right.template get<index>());
     }
 };
+
+struct AddPolicy{
+    static constexpr auto Eval = [](auto left, auto right)
+    {
+        return left + right;
+    };
+};
+
+struct SubPolicy{
+    static constexpr auto Eval = [](auto left, auto right)
+    {
+        return left - right;
+    };
+};
+
+template<typename Left, typename Right>
+using SumOperation = BinOperation<Left, Right, AddPolicy>;
+
+template<typename Left, typename Right>
+using SubOperation = BinOperation<Left, Right, SubPolicy>;
 
 template<
     typename TLeftRef,
@@ -105,7 +117,28 @@ auto operator+(
         TLeftRef&& left,
         TRightRef&& right)
 {
-    return Sumoperation<TLeftRef, TRightRef>(
+    return SumOperation<TLeftRef, TRightRef>(
+        std::forward<TLeftRef>(left),
+        std::forward<TRightRef>(right));
+}
+
+template<
+    typename TLeftRef,
+    typename TRightRef,
+    typename TLeft = std::remove_reference_t<TLeftRef>,
+    typename TRight = std::remove_reference_t<TRightRef>,
+    typename data_type_left = typename TLeft::data_type,
+    typename data_type_right = typename TRight::data_type,
+    typename LeftIndexes = typename TLeft::indexes,
+    typename RightIndexes = typename TRight::indexes,
+    typename = typename std::enable_if_t<std::is_same_v<data_type_left,data_type_right>>,
+    typename = typename std::enable_if_t<has_same_index_type_v<LeftIndexes, RightIndexes>>
+    >
+auto operator-(
+        TLeftRef&& left,
+        TRightRef&& right)
+{
+    return SubOperation<TLeftRef, TRightRef>(
         std::forward<TLeftRef>(left),
         std::forward<TRightRef>(right));
 }
