@@ -1,25 +1,33 @@
-## make sure the user is doing an our of source build:
-if ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR} )
-    message( FATAL_ERROR "In-source builds are not allowed. use cmake -H. -Bbuild instead to build in the build folder" )
-endif()
-###
-
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 3.20)
 project (SparseVector)
+
+include(${CMAKE_CURRENT_LIST_DIR}/conan_cmake/conan.cmake)
+conan_cmake_configure(REQUIRES
+        catch2/2.13.6
+        GENERATORS
+        ycm
+        cmake_find_package
+        cmake
+        cmake_paths)
+
+conan_cmake_autodetect(settings)
+
+conan_cmake_install(PATH_OR_REFERENCE .
+        BUILD missing
+        REMOTE conancenter
+        SETTINGS ${settings})
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD 17)
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    MESSAGE("using clang compiler -> setting c++ version to 17")
-    SET (CMAKE_CXX_FLAGS "-Wall -std=c++17")
-endif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-if(MSVC)
-    SET (CMAKE_CXX_FLAGS "/std:c++17")
-endif()
+add_library(SVector INTERFACE)
+include_directories(SVector INTERFACE "${CMAKE_CURRENT_LIST_DIR}/src")
 
+find_package(Catch2 REQUIRED)
+
+
+enable_testing()
 add_subdirectory(test)
-#include_directories("${CMAKE_SOURCE_DIR}/lib/catch2")
-#include_directories("${CMAKE_SOURCE_DIR}/include")
-
-#enable_testing()
-
-#add_test(NAME vectorTest COMMAND panocTests)

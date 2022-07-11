@@ -1,4 +1,4 @@
-#include"catch.hpp"
+#include<catch2/catch.hpp>
 #include"basics.hpp"
 
 TEST_CASE("Insert index in empty list", "[Indexlist]"){

@@ -1,4 +1,4 @@
-#include"catch.hpp"
+#include<catch2/catch.hpp>
 #include"basics.hpp"
 
 TEST_CASE("Check if [1]==[1]", "[Indexlist]"){
