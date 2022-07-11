@@ -23,11 +23,11 @@ include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 
+find_package(Catch2 REQUIRED)
+
 add_library(SVector INTERFACE)
 include_directories(SVector INTERFACE "${CMAKE_CURRENT_LIST_DIR}/src")
 
-find_package(Catch2 REQUIRED)
-
-
 enable_testing()
 add_subdirectory(test)
+add_subdirectory(examples)

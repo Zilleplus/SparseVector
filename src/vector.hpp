@@ -3,7 +3,7 @@
 
 #include<utility>
 #include<type_traits>
-#include<basics.hpp"
+#include<basics.hpp>
 
 namespace spr{
 
@@ -12,14 +12,13 @@ template<
     typename Tindexes
         >
 struct Vector{
-    bool isDeleted = false;
     DataType* data;
     using indexes = Tindexes;
     using data_type = DataType;
 
     template<typename... Elements>
     Vector(Elements... els) :
-        data(new DataType[]{els...})
+        data(new DataType[sizeof...(Elements)]{els...})
     {
     }
 
@@ -27,8 +26,10 @@ struct Vector{
 
     ~Vector()
     {
-        delete[] data;
-        isDeleted = true;
+        if (data != nullptr)
+        {
+            delete[] data;
+        }
     }
 
     template<
@@ -113,7 +114,7 @@ template<
     typename = typename std::enable_if_t<std::is_same_v<data_type_left,data_type_right>>,
     typename = typename std::enable_if_t<has_same_index_type_v<LeftIndexes, RightIndexes>>
     >
-auto operator+(
+inline auto operator+(
         TLeftRef&& left,
         TRightRef&& right)
 {
@@ -134,7 +135,7 @@ template<
     typename = typename std::enable_if_t<std::is_same_v<data_type_left,data_type_right>>,
     typename = typename std::enable_if_t<has_same_index_type_v<LeftIndexes, RightIndexes>>
     >
-auto operator-(
+inline auto operator-(
         TLeftRef&& left,
         TRightRef&& right)
 {

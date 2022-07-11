@@ -1,0 +1,3 @@
+add_executable(vectorSumExample vectorSumExample.cpp)
+
+target_link_libraries(vectorSumExample SVector)
