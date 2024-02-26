@@ -2,13 +2,12 @@
 enable_testing()
 
 add_executable(vectorTests 
-    vectorTests.cpp # file containing main method of tests 
     vector.cpp
     contains.cpp
     equals.cpp
     insertindex.cpp
     ) 
 
-target_link_libraries(vectorTests PUBLIC SVector Catch2::Catch2 m)
+target_link_libraries(vectorTests PUBLIC SVector Catch2::Catch2WithMain m)
 
 add_test(NAME vectorTests COMMAND vectorTests)
