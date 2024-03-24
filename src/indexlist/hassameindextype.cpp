@@ -1,5 +1,11 @@
+export module spr:has_same_index_type;
+import :isempty;
+
+#include<type_traits>
+
 namespace spr{
 
+export
 template<
     typename left,
     typename right,

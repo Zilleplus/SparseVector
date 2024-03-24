@@ -1,3 +1,8 @@
+export module spr:length;
+import :indexlist;
+
+#include<type_traits>
+
 namespace spr{
     template<typename List>
     struct length;

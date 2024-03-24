@@ -1,3 +1,9 @@
+export module spr:insert_index;
+
+import :isempty;
+import :push_front;
+import :indexlist
+
 namespace spr{
 
 template<auto element, typename List, bool = is_empty_v<List>>

@@ -1,3 +1,7 @@
+export module spr:indextype;
+import :isempty;
+import :head
+
 namespace spr{
 
 // undefined for empty lists, as they have no index type

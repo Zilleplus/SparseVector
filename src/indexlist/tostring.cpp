@@ -1,3 +1,12 @@
+export module spr:string;
+
+import :lenght;
+import :head;
+import :pop_front_t
+
+#include <cstddef>
+#include <string>
+
 namespace spr{
 
 template<typename List, bool firstCall = true, size_t = length_v<List>>

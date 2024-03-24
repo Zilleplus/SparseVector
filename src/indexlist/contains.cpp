@@ -1,3 +1,8 @@
+export module spr:contains;
+
+export import :isempty
+export import :indexlist
+
 namespace spr{
 
 template<typename List, auto element, bool = is_empty_v<List>>

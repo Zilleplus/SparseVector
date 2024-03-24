@@ -1,3 +1,10 @@
+export module spr:intersection;
+
+import :empty;
+import :push_front;
+import :head;
+import :pop_front;
+
 namespace spr{
 
 template<typename List1, typename List2, bool = is_empty_v<List1>>

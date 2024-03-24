@@ -1,3 +1,8 @@
+export module spr:join;
+
+import :pop_front;
+import :isempty;
+
 namespace spr{
 
 template<

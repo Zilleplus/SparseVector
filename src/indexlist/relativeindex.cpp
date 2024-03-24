@@ -1,10 +1,14 @@
+export module spr:relativeindex;
+
+import :contains;
+
 namespace spr{
     template<
         auto indexSparse,
         typename List,
         auto startIndex = -1,
         bool = contains_v<List, indexSparse>>
-    struct relative_index;
+    struct relative_ink
 
     template<
         auto indexSparse,

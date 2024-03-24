@@ -1,3 +1,7 @@
+export module spr:pop_front;
+
+import :indexlist
+
 namespace spr{
 
 template<typename List>

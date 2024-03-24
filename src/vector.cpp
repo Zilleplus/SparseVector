@@ -1,13 +1,15 @@
-#ifndef VECTOR_HPP
-#define VECTOR_HPP
+module;
 
 #include<utility>
 #include<type_traits>
-#include<basics.hpp>
+
+export module spr;
+import :relativeindex;
+import :hassameindextype
 
 namespace spr{
 
-template<
+export template<
     typename DataType,
     typename Tindexes
         >
@@ -145,5 +147,3 @@ inline auto operator-(
 }
 
 }
-
-#endif

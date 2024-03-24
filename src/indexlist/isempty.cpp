@@ -1,3 +1,7 @@
+export module spr:isempty;
+
+import :indexlist;
+
 namespace spr{
 
 template<typename List>
